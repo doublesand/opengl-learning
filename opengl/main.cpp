@@ -102,16 +102,20 @@ int main(void)
 		std::cout << "ERROR!" << std::endl;
 	std::cout << glGetString(GL_VERSION) << std::endl;  //版本
 
-	float positions[6] = { //顶点
+	float positions[] = { //顶点
 		-0.5f, -0.5f,
-		 0.0f,  0.5f,
-		 0.5f, -0.5f
+		 0.5f, -0.5f,
+		 0.5f,  0.5f,
+
+		 0.5f,  0.5f,
+		-0.5f,  0.5f,
+		-0.5f, -0.5f
 	};
 
 	unsigned int buffer;
 	glGenBuffers(1, &buffer);  //申请GPU内存
 	glBindBuffer(GL_ARRAY_BUFFER, buffer); //绑定内存
-	glBufferData(GL_ARRAY_BUFFER, 6 * sizeof(float), positions, GL_STATIC_DRAW); //传入数据
+	glBufferData(GL_ARRAY_BUFFER, 6 * 2 * sizeof(float), positions, GL_STATIC_DRAW); //传入数据
 
 	glEnableVertexAttribArray(0);  
 	glVertexAttribPointer(0, 2, GL_FLOAT,GL_FALSE,2 * sizeof(float), 0); //确定顶点属性
@@ -126,7 +130,7 @@ int main(void)
 		/* Render here */
 		glClear(GL_COLOR_BUFFER_BIT);
 		
-		glDrawArrays(GL_TRIANGLES, 0, 3); //绘制三角形
+		glDrawArrays(GL_TRIANGLES, 0, 6); //绘制三角形
 		
 		/* Swap front and back buffers */
 		glfwSwapBuffers(window);
