@@ -6,14 +6,23 @@
 #include <string>
 #include <sstream>
 
+#define ASSERT(x) if (!(x)) __debugbreak(); 
+#define GLCall(x) GLClearError();\
+	x;\
+	ASSERT(GLLogCall(#x, __FILE__, __LINE__))
+	
+
 static void GLClearError() {
 	while (glGetError() != GL_NO_ERROR);
 }
 
-static void GLCheckError() {
+static bool GLLogCall(const char* function, const char* file, int line) {
 	while (GLenum error = glGetError()) {
-		std::cout << "[OpenGL Error] (" << error << ")" << std::endl;
+		std::cout << "[OpenGL Error] (" << error << "): " <<function<<
+			" "<< file << ":" << line << std::endl;
+		return false;
 	}
+	return true; 
 }
 
 struct ShaderProgramSource
@@ -129,9 +138,9 @@ int main(void)
 	glBindBuffer(GL_ARRAY_BUFFER, buffer); //绑定内存
 	glBufferData(GL_ARRAY_BUFFER, 8 * sizeof(float), positions, GL_STATIC_DRAW); //传入数据
 
-	glEnableVertexAttribArray(0);  
-	glVertexAttribPointer(0, 2, GL_FLOAT,GL_FALSE,2 * sizeof(float), 0); //确定顶点属性
-	
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0); //确定顶点属性
+
 	unsigned int ibo;
 	glGenBuffers(1, &ibo);  //申请GPU内存
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo); //绑定内存
@@ -146,11 +155,10 @@ int main(void)
 	{
 		/* Render here */
 		glClear(GL_COLOR_BUFFER_BIT);
-		
+
 		//第一次传入的索引可以找到数组里的顶点并绘制，根据绘制的类型找到顶点数据
-		GLClearError();
-		glDrawElements(GL_TRIANGLES, 6, GL_INT, nullptr);
-		GLCheckError();
+
+		GLCall(glDrawElements(GL_TRIANGLES, 6, GL_INT, nullptr));
 
 		/* Swap front and back buffers */
 		glfwSwapBuffers(window);
