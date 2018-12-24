@@ -6,6 +6,16 @@
 #include <string>
 #include <sstream>
 
+static void GLClearError() {
+	while (glGetError() != GL_NO_ERROR);
+}
+
+static void GLCheckError() {
+	while (GLenum error = glGetError()) {
+		std::cout << "[OpenGL Error] (" << error << ")" << std::endl;
+	}
+}
+
 struct ShaderProgramSource
 {
 	std::string VertexSource;
@@ -138,8 +148,10 @@ int main(void)
 		glClear(GL_COLOR_BUFFER_BIT);
 		
 		//第一次传入的索引可以找到数组里的顶点并绘制，根据绘制的类型找到顶点数据
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
-		
+		GLClearError();
+		glDrawElements(GL_TRIANGLES, 6, GL_INT, nullptr);
+		GLCheckError();
+
 		/* Swap front and back buffers */
 		glfwSwapBuffers(window);
 
